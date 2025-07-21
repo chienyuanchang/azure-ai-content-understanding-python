@@ -1,12 +1,15 @@
 import os
 import sys
-import traceback
 import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
 
-def run_all_notebooks(path='.'):
-    print(f"🔍 Scanning for notebooks in: {os.path.abspath(path)}\n")
-    notebook_found, success_notebook = 0, 0
+
+def run_all_notebooks(path="."):
+    abs_path = os.path.abspath(path)
+    print(f"🔍 Scanning for notebooks in: {abs_path}\n")
+
+    notebook_found = 0
+    success_notebooks = []
     failed_notebooks = []
 
     for root, _, files in os.walk(path):
@@ -19,39 +22,32 @@ def run_all_notebooks(path='.'):
                 with open(notebook_path, encoding="utf-8") as f:
                     nb = nbformat.read(f, as_version=4)
 
-                ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
+                ep = ExecutePreprocessor(timeout=600, kernel_name="python3")
 
                 try:
-                    ep.preprocess(nb, {'metadata': {'path': root}})
+                    ep.preprocess(nb, {"metadata": {"path": root}})
                     print(f"✅ Success: {notebook_path}\n")
-                    success_notebook += 1
+                    success_notebooks.append(notebook_path)
                 except Exception as e:
-                    print(f"❌ Failed: {notebook_path}")
-                    traceback.print_exception(type(e), e, e.__traceback__)
-                    failed_notebooks.append((notebook_path, e))
-                    print()  # extra newline for clarity
+                    print(f"❌ Failed: {notebook_path}\nError: {e}\n")
+                    failed_notebooks.append((notebook_path, str(e)))
 
-    # Summary
-    print("=" * 60)
-    print(f"📊 Summary: {success_notebook} / {notebook_found} notebooks ran successfully.")
+    # 📋 Summary
+    print("🧾 Notebook Execution Summary")
+    print(f"✅ {len(success_notebooks)} succeeded")
+    print(f"❌ {len(failed_notebooks)} failed\n")
+
     if failed_notebooks:
-        print(f"\n🚨 Failed notebooks:")
+        print("🚨 Failed notebooks:")
         for nb, error in failed_notebooks:
-            print(f" - {nb}")
-            if hasattr(error, "__traceback__"):
-                tb_lines = traceback.format_exception(type(error), error, error.__traceback__)
-                for line in tb_lines[-3:]:
-                    print("     ↳ " + line.strip())
-            else:
-                lines = str(error).strip().splitlines()
-                if lines:
-                    for line in lines[:3]:
-                        print(f"     ↳ {line}")
-                else:
-                    print("     ↳ (No error message captured)")
+            print(f" - {nb}\n   ↳ {error.splitlines()[0]}")
+        sys.exit(1)
 
-    # Exit with appropriate code
-    sys.exit(1 if failed_notebooks else 0)
+    if notebook_found == 0:
+        print("❌ No notebooks were found. Check the folder path or repo contents.")
+        sys.exit(1)
+        print("🏁 All notebooks completed successfully.")
+
 
 if __name__ == "__main__":
     run_all_notebooks("notebooks")
