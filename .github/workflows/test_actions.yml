@@ -27,4 +27,6 @@ jobs:
         run: ls -la notebooks
 
       - name: Run notebook tests
-        run: python tools/run_notebooks.py
+        run: |
+          set -e
+          python tools/run_notebooks.py
