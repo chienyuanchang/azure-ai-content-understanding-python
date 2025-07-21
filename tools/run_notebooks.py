@@ -7,10 +7,11 @@ from nbconvert.preprocessors import ExecutePreprocessor
 
 def run_all_notebooks(path='.'):
     print(f"🔍 Scanning for notebooks in: {os.path.abspath(path)}\n")
-
+    notebook_found, success_notebook = 0, 0
     for root, _, files in os.walk(path):
         for file in files:
             if file.endswith(".ipynb") and not file.startswith("."):
+                notebook_found += 1
                 notebook_path = os.path.join(root, file)
                 print(f"▶️ Running: {notebook_path}")
 
@@ -22,10 +23,11 @@ def run_all_notebooks(path='.'):
                 try:
                     ep.preprocess(nb, {'metadata': {'path': root}})
                     print(f"✅ Success: {notebook_path}\n")
+                    success_notebook += 1
                 except Exception as e:
                     print(f"❌ Failed: {notebook_path}\nError: {e}\n")
                     raise RuntimeError(f"Notebook execution failed: {notebook_path}") from e
-
+    print(f"{success_notebook} of {notebook_found} notebooks run successfully")
 
 if __name__ == "__main__":
     run_all_notebooks("/workspaces/azure-ai-content-understanding-python/notebooks")
