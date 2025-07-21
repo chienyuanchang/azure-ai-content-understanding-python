@@ -1,5 +1,6 @@
 import os
 import sys
+import traceback
 import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
 
@@ -30,7 +31,7 @@ def run_all_notebooks(path="."):
                     success_notebooks.append(notebook_path)
                 except Exception as e:
                     print(f"❌ Failed: {notebook_path}\nError: {e}\n")
-                    failed_notebooks.append((notebook_path, str(e)))
+                    failed_notebooks.append((notebook_path, e))
 
     # 📋 Summary
     print("🧾 Notebook Execution Summary")
@@ -38,16 +39,25 @@ def run_all_notebooks(path="."):
     print(f"❌ {len(failed_notebooks)} failed\n")
 
     if failed_notebooks:
-        print("🚨 Failed notebooks:")
         for nb, error in failed_notebooks:
-            print(f" - {nb}\n   ↳ {error.splitlines()[0]}")
+            print(f" - {nb}")
+            # Show the full traceback if available
+            if hasattr(error, "__traceback__"):
+                tb_lines = traceback.format_exception(type(error), error, error.__traceback__)
+                print("".join("     " + line for line in tb_lines[-3:]))  # last 3 lines
+            else:
+                lines = error.strip().splitlines()
+                if lines:
+                    for line in lines[:3]:  # first 3 lines if no traceback
+                        print(f"     ↳ {line}")
+                else:
+                    print("     ↳ (No error message captured)")
         sys.exit(1)
 
     if notebook_found == 0:
-        print("⚠️ No notebooks were found.")
-        sys.exit(0)
-
-    print("🏁 All notebooks completed successfully.")
+        print("❌ No notebooks were found. Check the folder path or repo contents.")
+        sys.exit(1)
+        print("🏁 All notebooks completed successfully.")
 
 
 if __name__ == "__main__":
