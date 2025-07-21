@@ -30,4 +30,4 @@ def run_all_notebooks(path='.'):
     print(f"{success_notebook} of {notebook_found} notebooks run successfully")
 
 if __name__ == "__main__":
-    run_all_notebooks("/workspaces/azure-ai-content-understanding-python/notebooks")
+    run_all_notebooks("notebooks")
