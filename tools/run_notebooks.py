@@ -40,7 +40,7 @@ def run_all_notebooks(path="."):
     if failed_notebooks:
         print("🚨 Failed notebooks:")
         for nb, error in failed_notebooks:
-            print(f" - {nb}\n   ↳ {error.splitlines()[0]}")
+            print(f" - {nb}\n   ↳ {error}")
         sys.exit(1)
 
     if notebook_found == 0:
