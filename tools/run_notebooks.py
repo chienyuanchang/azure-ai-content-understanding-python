@@ -1,7 +1,21 @@
 import os
 import sys
+import traceback
 import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
+
+
+def run_notebook(notebook_path, root):
+    """Execute a single notebook."""
+    try:
+        with open(notebook_path, encoding="utf-8") as f:
+            nb = nbformat.read(f, as_version=4)
+
+        ep = ExecutePreprocessor(timeout=600, kernel_name="python3")
+        ep.preprocess(nb, {"metadata": {"path": root}})
+        return True, None
+    except Exception as e:
+        return False, str(e)
 
 
 def run_all_notebooks(path="."):
@@ -12,25 +26,21 @@ def run_all_notebooks(path="."):
     success_notebooks = []
     failed_notebooks = []
 
-    for root, _, files in os.walk(path):
+    for root, _, files in os.walk(abs_path):
         for file in files:
             if file.endswith(".ipynb") and not file.startswith("."):
                 notebook_found += 1
                 notebook_path = os.path.join(root, file)
                 print(f"▶️ Running: {notebook_path}")
 
-                with open(notebook_path, encoding="utf-8") as f:
-                    nb = nbformat.read(f, as_version=4)
+                success, error = run_notebook(notebook_path, root)
 
-                ep = ExecutePreprocessor(timeout=600, kernel_name="python3")
-
-                try:
-                    ep.preprocess(nb, {"metadata": {"path": root}})
+                if success:
                     print(f"✅ Success: {notebook_path}\n")
                     success_notebooks.append(notebook_path)
-                except Exception as e:
-                    print(f"❌ Failed: {notebook_path}\nError: {e}\n")
-                    failed_notebooks.append((notebook_path, str(e)))
+                else:
+                    print(f"❌ Failed: {notebook_path}\nError: {error}\n")
+                    failed_notebooks.append((notebook_path, error))
 
     # 📋 Summary
     print("🧾 Notebook Execution Summary")
@@ -40,14 +50,17 @@ def run_all_notebooks(path="."):
     if failed_notebooks:
         print("🚨 Failed notebooks:")
         for nb, error in failed_notebooks:
-            print(f" - {nb}\n   ↳ {error.splitlines()[-1]}")
+            last_line = error.strip().splitlines()[-1] if error else "Unknown error"
+            print(f" - {nb}\n   ↳ {last_line}")
         sys.exit(1)
 
     if notebook_found == 0:
         print("❌ No notebooks were found. Check the folder path or repo contents.")
         sys.exit(1)
-        print("🏁 All notebooks completed successfully.")
+
+    print("🏁 All notebooks completed successfully.")
 
 
 if __name__ == "__main__":
-    run_all_notebooks("notebooks")
+    target_path = sys.argv[1] if len(sys.argv) > 1 else "notebooks"
+    run_all_notebooks(target_path)
