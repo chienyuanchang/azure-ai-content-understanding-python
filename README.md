@@ -1,27 +1,3 @@
-# Azure AI Content Understanding Samples (Python)
-
-Welcome! Content Understanding is a solution that analyzes and comprehends various media content, such as **documents, images, audio, and video**, transforming it into structured, organized, and searchable data.
-
-- The samples in this repository default to the latest preview API version: **2025-05-01-preview**.
-- This repo will provide more samples for new functionalities in Preview.2 **2025-05-01-preview** soon.
-- As of 2025/05, 2025-05-01-preview is only available in the regions documented in [Content Understanding region and language support](https://learn.microsoft.com/en-us/azure/ai-services/content-understanding/language-region-support).
-- To access the sample code for version 2024-12-01-preview, please check out the corresponding Git tag 2024-12-01-preview, or download it directly from the [release page](https://github.com/Azure-Samples/azure-ai-content-understanding-python/releases/tag/2024-12-01-preview).
-
-## Getting started
-You can run the sample in GitHub Codespaces or in your local environment. For a smoother, hassle-free experience, we recommend starting with Codespaces.
-
-### GitHub Codespaces
-You can run this repo virtually by using GitHub Codespaces, which will open a web-based VS Code in your browser.
-
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?skip_quickstart=true&machine=basicLinux32gb&repo=899687170&ref=main&geo=UsEast&devcontainer_path=.devcontainer%2Fdevcontainer.json)
-
-Once you click the link above, please follow the steps below to set up the Codespace.
-
-1. Create a new Codespace by selecting the main branch, your preferred region for the Codespace, and the 2-core machine type, as shown in the screenshot below. \
-![Create CodeSpace](/docs/create-codespace/1-Create%20Codespace.png)
-2. Once the Codespace is ready, open the terminal and follow the instructions in the "Configure Azure AI service resource" section to set up a valid Content Understanding resource.
-
-
 ### Local environment
 1. Make sure the following tools are installed:
 
